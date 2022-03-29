@@ -134,7 +134,7 @@ submit_pr() {
   echo "ttt pr_body: $pr_body" >> log
   
   echo "Creating pull request."
-  if output="$($submit_fn "$pr_title" "$pr_body" "$@" -R "https://github.com/abrfr/neovim.git" 2>&1)"; then
+  if output="$($submit_fn "$pr_title" "$pr_body" --repo "https://github.com/abrfr/neovim.git" --head abrfr:bump_deps_example 2>&1)"; then
     msg_ok "$output"
   else
     msg_err "$output"
