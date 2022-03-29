@@ -7,10 +7,13 @@
 --
 --    # bump to HEAD
 --    nvim -es +"lua require('scripts.bump_deps').head(dependency)"
+--
+--    # submit PR
+--    nvim -es +"lua require('scripts.bump_deps').submit_pr()"
 
 local M = {}
 
-local _trace = false
+local _trace = true
 
 -- TODO: verify run from root
 
@@ -170,6 +173,13 @@ function M.head(dependency_name)
 	local commit_sha = run({ "jq", "-r", ".sha", gh_res_path }, true)
 	local archive = get_archive_info(dependency.repo, commit_sha)
 	update_cmakelists(dependency, archive, "HEAD: " .. commit_sha)
+end
+
+function M.submit_pr()
+	local branch_prefix = "bump_deps_"
+	local pr_title = "dependency: example 2"
+	local pr_body = ""
+	run({ "bash", "scripts/submit_pr.sh", branch_prefix, '"' .. pr_title .. '"', '"' .. pr_body .. '"' }, true)
 end
 
 -- function M.main(opt)
