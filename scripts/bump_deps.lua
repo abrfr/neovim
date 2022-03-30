@@ -14,8 +14,8 @@
 local M = {}
 
 local _trace = false
-local required_branch_prefix = "bump_deps_"
-local commit_prefix = "bump-deps: "
+local required_branch_prefix = "bump-"
+local commit_prefix = "build(deps): "
 
 -- TODO: verify run from root
 
@@ -338,9 +338,5 @@ function M.submit_pr()
 	p(pr_title .. "\n" .. pr_body .. "\n")
 	create_pr(required_branch_prefix, pr_title, pr_body)
 end
-
--- function M.main(opt)
--- 	_trace = not opt or not not opt.trace
--- end
 
 return M
