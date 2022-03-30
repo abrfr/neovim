@@ -132,7 +132,8 @@ local function dl_gh_ref_info(repo, ref)
 	end
 end
 
-local function get_sha256_json(file)
+-- extract .sha field from github api
+local function get_sha256_json()
 	require_executable("jq")
 	return run({ "jq", "-r", ".sha", gh_res_path })
 end
@@ -238,6 +239,8 @@ local function gh_pr(pr_title, pr_body)
 		pr_title,
 		"--body",
 		pr_body,
+		"--repo",
+		"https://github.com/abrfr/neovim",
 	}, "Failed to create PR")
 end
 
