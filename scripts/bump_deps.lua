@@ -210,7 +210,7 @@ function M.commit(dependency_name, commit)
 		die()
 	end
 	local archive = get_archive_info(dependency.repo, commit)
-	update_cmakelists(dependency, archive, "commit " .. short_commit(commit))
+	update_cmakelists(dependency, archive, short_commit(commit))
 end
 
 function M.version(dependency_name, version)
@@ -223,7 +223,7 @@ function M.version(dependency_name, version)
 		die()
 	end
 	local archive = get_archive_info(dependency.repo, version)
-	update_cmakelists(dependency, archive, "version " .. version)
+	update_cmakelists(dependency, archive, version)
 end
 
 function M.head(dependency_name)
@@ -232,7 +232,7 @@ function M.head(dependency_name)
 	dl_gh_ref_info(dependency.repo, "HEAD")
 	local commit_sha = get_json_field(gh_res_path, "sha")
 	local archive = get_archive_info(dependency.repo, commit_sha)
-	update_cmakelists(dependency, archive, "HEAD (" .. short_commit(commit_sha) .. ")")
+	update_cmakelists(dependency, archive, "HEAD - " .. short_commit(commit_sha))
 end
 
 local function gh_pr(pr_title, pr_body)
@@ -328,19 +328,29 @@ end
 
 function M.submit_pr()
 	local nvim_remote = find_git_remote(nil)
-	local relevant_commits = run_die({
+	local relevant_commit = run_die({
 		"git",
 		"log",
 		"--grep=" .. commit_prefix,
 		"--reverse",
 		"--format='%s'",
 		nvim_remote .. "/master..HEAD",
+		"-1",
 	}, "Failed to fetch commits")
-	local escaped_commit_prefix = commit_prefix:gsub("%-", "%%-")
-	relevant_commits = relevant_commits:gsub("'", ""):gsub(escaped_commit_prefix, "")
-	local pr_body = relevant_commits
-	local pr_title = "bump deps: " .. (relevant_commits .. "\n"):gsub(" [^%\n]*%\n", ", "):gsub(", $", "")
-	p(pr_title .. "\n" .. pr_body .. "\n")
+
+	local pr_title
+	local pr_body
+
+	if relevant_commit == "" then
+		pr_title = commit_prefix .. "bump some dependencies"
+		pr_body = "bump some dependencies"
+	else
+		relevant_commit = relevant_commit:gsub("'", "")
+		pr_title = relevant_commit
+		pr_body = relevant_commit:gsub(commit_prefix:gsub("%(", "%%("):gsub("%)", "%%)"), "")
+	end
+	pr_body = pr_body .. "\n\n<add explanations if needed>"
+	-- p(pr_title .. "\n" .. pr_body .. "\n")
 	create_pr(required_branch_prefix, pr_title, pr_body)
 end
 
