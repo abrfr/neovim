@@ -32,7 +32,7 @@ local function die()
 end
 
 -- Executes and returns the output of `cmd`, or nil on failure.
--- if die_on_fail is true, process dies with die_msg
+-- if die_on_fail is true, process dies with die_msg on failure
 --
 -- Prints `cmd` if `trace` is enabled.
 local function _run(cmd, die_on_fail, die_msg)
