@@ -236,7 +236,7 @@ function M.head(dependency_name)
 end
 
 local function gh_pr(pr_title, pr_body)
-	run_die({
+	local pr_url = run_die({
 		"gh",
 		"pr",
 		"create",
@@ -247,11 +247,12 @@ local function gh_pr(pr_title, pr_body)
 		"--repo",
 		"https://github.com/abrfr/neovim",
 	}, "Failed to create PR")
+  return pr_url
 end
 
 local function git_hub_pr(pr_title, pr_body)
 	local pr_message = pr_title .. "\n\n" .. pr_body .. "\n"
-	run_die({
+	local pr_url = run_die({
 		"git",
 		"hub",
 		"pull",
@@ -259,6 +260,7 @@ local function git_hub_pr(pr_title, pr_body)
 		"-m",
 		pr_message,
 	}, "Failed to create PR")
+  return pr_url
 end
 
 local function find_git_remote(fork)
@@ -322,8 +324,8 @@ local function create_pr(branch_prefix, pr_title, pr_body)
 		run_die({ "git", "push", push_remote, checked_out_branch }, "Git failed to push")
 	end
 
-	submit_fn(pr_title, pr_body)
-	p("\nCreated PR\n")
+	local pr_url = submit_fn(pr_title, pr_body)
+	p("\nCreated PR: " .. pr_url .. "\n")
 end
 
 function M.submit_pr()
