@@ -203,8 +203,8 @@ set(LIBICONV_SHA256 ccf536620a45458d26ba83887a983b96827001e92a13847b45e4925cc891
 set(TREESITTER_C_URL https://github.com/tree-sitter/tree-sitter-c/archive/v0.20.1.tar.gz)
 set(TREESITTER_C_SHA256 ffcc2ef0eded59ad1acec9aec4f9b0c7dd209fc1a85d85f8b0e81298e3dddcc2)
 
-set(TREESITTER_URL https://github.com/tree-sitter/tree-sitter/archive/v0.20.6.tar.gz)
-set(TREESITTER_SHA256 4d37eaef8a402a385998ff9aca3e1043b4a3bba899bceeff27a7178e1165b9de)
+set(TREESITTER_URL https://github.com/tree-sitter/tree-sitter/archive/ccd6bf554d922596ce905730d98a77af368bba5c.tar.gz) # HEAD (ccd6bf554)
+set(TREESITTER_SHA256 fd767219d042e81a135dda99fe72c81165952ca2a5149bd534662a20208e4e29)
 
 if(USE_BUNDLED_UNIBILIUM)
   include(BuildUnibilium)
