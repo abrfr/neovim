@@ -181,7 +181,7 @@ end
 local function update_cmakelists(dependency, archive, comment)
 	local changed_file = nvim_src_dir .. "/" .. "third-party/CMakeLists.txt"
 
-	p("Updating " .. dependency.symbol .. " to " .. archive.url .. "\n")
+	p("Updating " .. dependency.name .. " to " .. archive.url .. "\n")
 	write_cmakelists_line(dependency.symbol, "URL", archive.url:gsub("/", "\\/"), " # " .. comment)
 	write_cmakelists_line(dependency.symbol, "SHA256", archive.sha, "")
 	run_die(
