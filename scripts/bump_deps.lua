@@ -150,7 +150,7 @@ local function get_archive_info(repo, ref)
 	return { url = archive_url, sha = archive_sha }
 end
 
-local function write_cmakelists_line(symbol, kind, value, comment)
+local function write_cmakelists_line(symbol, kind, value)
 	require_executable("sed")
 
 	local cmakelists_path = nvim_src_dir .. "/" .. "third-party/CMakeLists.txt"
@@ -158,20 +158,7 @@ local function write_cmakelists_line(symbol, kind, value, comment)
 		"sed",
 		"-i",
 		"-e",
-		"s/set("
-			.. symbol
-			.. "_"
-			.. kind
-			.. ".*$"
-			.. "/set("
-			.. symbol
-			.. "_"
-			.. kind
-			.. " "
-			.. value
-			.. ")"
-			.. comment
-			.. "/",
+		"s/set(" .. symbol .. "_" .. kind .. ".*$" .. "/set(" .. symbol .. "_" .. kind .. " " .. value .. ")" .. "/",
 		cmakelists_path,
 	}, "Failed to write " .. cmakelists_path)
 end
@@ -180,8 +167,8 @@ local function update_cmakelists(dependency, archive, comment)
 	local changed_file = nvim_src_dir .. "/" .. "third-party/CMakeLists.txt"
 
 	p("Updating " .. dependency.name .. " to " .. archive.url .. "\n")
-	write_cmakelists_line(dependency.symbol, "URL", archive.url:gsub("/", "\\/"), " # " .. comment)
-	write_cmakelists_line(dependency.symbol, "SHA256", archive.sha, "")
+	write_cmakelists_line(dependency.symbol, "URL", archive.url:gsub("/", "\\/"))
+	write_cmakelists_line(dependency.symbol, "SHA256", archive.sha)
 	run_die(
 		{ "git", "commit", changed_file, "-m", commit_prefix .. "bump " .. dependency.name .. " to " .. comment },
 		"git failed to commit"
@@ -222,7 +209,7 @@ function M.version(dependency_name, version)
 	local dependency = get_dependency(dependency_name)
 	verify_cmakelists_committed()
 	if dependency_name == "Luv" then
-		write_cmakelists_line(dependency.symbol, "VERSION", version, "")
+		write_cmakelists_line(dependency.symbol, "VERSION", version)
 	end
 	dl_gh_ref_info(dependency.repo, version)
 	local commit_sha = get_json_field(gh_res_path, "sha")
