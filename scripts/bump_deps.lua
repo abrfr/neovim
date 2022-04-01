@@ -236,22 +236,23 @@ function M.head(dependency_name)
 end
 
 local function gh_pr(pr_title, pr_body)
-	run_die({
+	local pr_url = run_die({
 		"gh",
 		"pr",
 		"create",
 		"--title",
 		pr_title,
-		"--body",
-		pr_body,
 		"--repo",
 		"https://github.com/abrfr/neovim",
+		"--body",
+		pr_body,
 	}, "Failed to create PR")
+	return pr_url
 end
 
 local function git_hub_pr(pr_title, pr_body)
 	local pr_message = pr_title .. "\n\n" .. pr_body .. "\n"
-	run_die({
+	local pr_url = run_die({
 		"git",
 		"hub",
 		"pull",
@@ -259,6 +260,7 @@ local function git_hub_pr(pr_title, pr_body)
 		"-m",
 		pr_message,
 	}, "Failed to create PR")
+	return pr_url
 end
 
 local function find_git_remote(fork)
@@ -322,8 +324,8 @@ local function create_pr(branch_prefix, pr_title, pr_body)
 		run_die({ "git", "push", push_remote, checked_out_branch }, "Git failed to push")
 	end
 
-	submit_fn(pr_title, pr_body)
-	p("\nCreated PR\n")
+	local pr_url = submit_fn(pr_title, pr_body)
+	p("\nCreated PR: " .. pr_url .. "\n")
 end
 
 function M.submit_pr()
@@ -349,8 +351,8 @@ function M.submit_pr()
 		pr_title = relevant_commit
 		pr_body = relevant_commit:gsub(commit_prefix:gsub("%(", "%%("):gsub("%)", "%%)"), "")
 	end
-	pr_body = pr_body .. "\n\n<add explanations if needed>"
-	-- p(pr_title .. "\n" .. pr_body .. "\n")
+	pr_body = pr_body .. "\n\n(add explanations if needed)"
+	p(pr_title .. "\n" .. pr_body .. "\n")
 	create_pr(required_branch_prefix, pr_title, pr_body)
 end
 
