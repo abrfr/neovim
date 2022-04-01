@@ -108,6 +108,7 @@ local function get_dependency(dependency_name)
 		p("Not a dependency: " .. dependency_name)
 		die()
 	end
+	dependency.name = dependency_name
 	return dependency
 end
 
@@ -184,7 +185,7 @@ local function update_cmakelists(dependency, archive, comment)
 	write_cmakelists_line(dependency.symbol, "URL", archive.url:gsub("/", "\\/"), " # " .. comment)
 	write_cmakelists_line(dependency.symbol, "SHA256", archive.sha, "")
 	run_die(
-		{ "git", "commit", changed_file, "-m", commit_prefix .. dependency.symbol .. " to " .. comment },
+		{ "git", "commit", changed_file, "-m", commit_prefix .. "bump " .. dependency.name .. " to " .. comment },
 		"git failed to commit"
 	)
 end
@@ -192,6 +193,11 @@ end
 local function verify_cmakelists_committed()
 	local cmakelists_path = nvim_src_dir .. "/" .. "third-party/CMakeLists.txt"
 	run_die({ "git", "diff", "--quiet", "HEAD", "--", cmakelists_path }, cmakelists_path .. " has uncommitted changes")
+end
+
+-- return first 9 chars of commit
+local function short_commit(commit)
+	return string.sub(commit, 1, 9)
 end
 
 function M.commit(dependency_name, commit)
@@ -204,7 +210,7 @@ function M.commit(dependency_name, commit)
 		die()
 	end
 	local archive = get_archive_info(dependency.repo, commit)
-	update_cmakelists(dependency, archive, "commit: " .. commit)
+	update_cmakelists(dependency, archive, "commit " .. short_commit(commit))
 end
 
 function M.version(dependency_name, version)
@@ -217,7 +223,7 @@ function M.version(dependency_name, version)
 		die()
 	end
 	local archive = get_archive_info(dependency.repo, version)
-	update_cmakelists(dependency, archive, "version: " .. version)
+	update_cmakelists(dependency, archive, "version " .. version)
 end
 
 function M.head(dependency_name)
@@ -226,7 +232,7 @@ function M.head(dependency_name)
 	dl_gh_ref_info(dependency.repo, "HEAD")
 	local commit_sha = get_json_field(gh_res_path, "sha")
 	local archive = get_archive_info(dependency.repo, commit_sha)
-	update_cmakelists(dependency, archive, "HEAD: " .. commit_sha)
+	update_cmakelists(dependency, archive, "HEAD (" .. short_commit(commit_sha) .. ")")
 end
 
 local function gh_pr(pr_title, pr_body)
