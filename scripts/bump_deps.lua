@@ -17,8 +17,6 @@ local _trace = false
 local required_branch_prefix = "bump-"
 local commit_prefix = "build(deps): "
 
--- TODO: verify run from root
-
 -- Print message
 local function p(s)
 	vim.cmd("set verbose=1")
@@ -200,9 +198,16 @@ local function short_commit(commit)
 	return string.sub(commit, 1, 9)
 end
 
+local function warn_luv_symbol()
+	p("warning: " .. get_dependency("Luv").symbol .. "_VERSION will not be updated")
+end
+
 function M.commit(dependency_name, commit)
 	local dependency = get_dependency(dependency_name)
 	verify_cmakelists_committed()
+	if dependency_name == "Luv" then
+		warn_luv_symbol()
+	end
 	dl_gh_ref_info(dependency.repo, commit)
 	local commit_sha = get_json_field(gh_res_path, "sha")
 	if commit_sha ~= commit then
@@ -216,6 +221,9 @@ end
 function M.version(dependency_name, version)
 	local dependency = get_dependency(dependency_name)
 	verify_cmakelists_committed()
+	if dependency_name == "Luv" then
+		write_cmakelists_line(dependency.symbol, "VERSION", version, "")
+	end
 	dl_gh_ref_info(dependency.repo, version)
 	local commit_sha = get_json_field(gh_res_path, "sha")
 	if commit_sha == version then
@@ -229,6 +237,9 @@ end
 function M.head(dependency_name)
 	local dependency = get_dependency(dependency_name)
 	verify_cmakelists_committed()
+	if dependency_name == "Luv" then
+		warn_luv_symbol()
+	end
 	dl_gh_ref_info(dependency.repo, "HEAD")
 	local commit_sha = get_json_field(gh_res_path, "sha")
 	local archive = get_archive_info(dependency.repo, commit_sha)
