@@ -132,10 +132,9 @@ local function dl_gh_ref_info(repo, ref)
 	end
 end
 
--- extract .sha field from github api
-local function get_sha256_json()
+local function get_json_field(jsonfile_path, field)
 	require_executable("jq")
-	return run({ "jq", "-r", ".sha", gh_res_path })
+	return run({ "jq", "-r", "." .. field, jsonfile_path })
 end
 
 local function get_archive_info(repo, ref)
@@ -199,7 +198,7 @@ function M.commit(dependency_name, commit)
 	local dependency = get_dependency(dependency_name)
 	verify_cmakelists_committed()
 	dl_gh_ref_info(dependency.repo, commit)
-	local commit_sha = get_sha256_json(gh_res_path)
+	local commit_sha = get_json_field(gh_res_path, "sha")
 	if commit_sha ~= commit then
 		p("Not a commit: " .. commit .. ". Did you mean version?")
 		die()
@@ -212,7 +211,7 @@ function M.version(dependency_name, version)
 	local dependency = get_dependency(dependency_name)
 	verify_cmakelists_committed()
 	dl_gh_ref_info(dependency.repo, version)
-	local commit_sha = get_sha256_json(gh_res_path)
+	local commit_sha = get_json_field(gh_res_path, "sha")
 	if commit_sha == version then
 		p("Not a version: " .. version .. ". Did you mean commit?")
 		die()
@@ -225,7 +224,7 @@ function M.head(dependency_name)
 	local dependency = get_dependency(dependency_name)
 	verify_cmakelists_committed()
 	dl_gh_ref_info(dependency.repo, "HEAD")
-	local commit_sha = get_sha256_json(gh_res_path)
+	local commit_sha = get_json_field(gh_res_path, "sha")
 	local archive = get_archive_info(dependency.repo, commit_sha)
 	update_cmakelists(dependency, archive, "HEAD: " .. commit_sha)
 end
