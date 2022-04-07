@@ -169,9 +169,9 @@ set(LIBTERMKEY_SHA256 6945bd3c4aaa83da83d80a045c5563da4edd7d0374c62c0d35aec09eb3
 set(LIBVTERM_URL https://www.leonerd.org.uk/code/libvterm/libvterm-0.1.4.tar.gz)
 set(LIBVTERM_SHA256 bc70349e95559c667672fc8c55b9527d9db9ada0fb80a3beda533418d782d3dd)
 
-set(LUV_VERSION 1.43.0-0)
-set(LUV_URL https://github.com/luvit/luv/archive/4e7e56cd96542d8a4b9b600551f6c3cf8c1d1150.tar.gz)
-set(LUV_SHA256 188f2b17c278018c20612e4fa46cc9d9b89095ed5ef9ee17698222c38d416528)
+set(LUV_VERSION 1.41.1-0)
+set(LUV_URL https://github.com/luvit/luv/archive/1.41.1-0.tar.gz)
+set(LUV_SHA256 24773c53fbc4f68cdeb25c62cf4df7601097bfc08b3918ab269065564a845813)
 
 set(LUA_COMPAT53_URL https://github.com/keplerproject/lua-compat-5.3/archive/v0.9.tar.gz)
 set(LUA_COMPAT53_SHA256 ad05540d2d96a48725bb79a1def35cf6652a4e2ec26376e2617c8ce2baa6f416)
